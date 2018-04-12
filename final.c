@@ -28,8 +28,8 @@ void turnLeft()
 
 void turnRight()
 {
-	motor[leftMotor] = -20;
-	motor[rightMotor] = 20;
+	motor[leftMotor] = 20;
+	motor[rightMotor] = -20;
 	wait1Msec(1000);
 	motor[leftMotor] = 0;
 	motor[rightMotor] = 0;
@@ -46,7 +46,7 @@ task main()
   while(true)   /* While the Sonar Sensor readings are greater */
 	{
 
-		if(SensorValue[frontSensor] > 15)
+		if(SensorValue[frontSensor] > 18)
 		{
 			moveForwards();
 		}
@@ -54,14 +54,16 @@ task main()
 		{
 			if(count == 0)
 			{
-				turnLeft();
+				if (SensorValue[leftSensor] > 18) {
+					turnLeft();
 
-				moveForwards();
-				wait1Msec(500);
+					moveForwards();
+					wait1Msec(500);
 
-				turnLeft();
-				count = 1;
-				continue;
+					turnLeft();
+					count = 1;
+					continue;
+				}
 			}
 			else
 			{
