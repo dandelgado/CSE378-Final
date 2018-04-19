@@ -15,16 +15,14 @@ ASSUMPTIONS AND EDGE CASES
 
 void moveForwards()
 {
-	while(SensorValue[frontSensor] > 22) {
-		if (SensorValue[leftSensor] <= 22) {
-			motor[leftMotor] = 40;
-			motor[rightMotor] = 38;
-		}
-		else {
-			motor[leftMotor] = 40;
-			motor[rightMotor] = 40;
-		}
-	}
+	motor[leftMotor] = 40;
+	motor[rightMotor] = 40;
+}
+
+void moveBackwards()
+{
+	motor[leftMotor] = -40;
+	motor[rightMotor] = -40;
 }
 
 void stopMove()
@@ -35,8 +33,8 @@ void stopMove()
 
 void turnLeft()
 {
-	motor[leftMotor] = -21;
-	motor[rightMotor] = 21;
+	motor[leftMotor] = -20;
+	motor[rightMotor] = 20;
 	wait1Msec(1000);
 	motor[leftMotor] = 0;
 	motor[rightMotor] = 0;
@@ -44,8 +42,8 @@ void turnLeft()
 
 void turnRight()
 {
-	motor[leftMotor] = 21;
-	motor[rightMotor] = -21;
+	motor[leftMotor] = 20;
+	motor[rightMotor] = -20;
 	wait1Msec(1000);
 	motor[leftMotor] = 0;
 	motor[rightMotor] = 0;
@@ -56,7 +54,7 @@ int attackMode(int objDist)
 	int r = 0;
 	clearTimer(T1);
 	while(time1[T1]<3000) {
-		if(SensorValue[frontSensor] > objDist+3 || SensorValue[frontSensor] < objDist-3) {
+		if(SensorValue[frontSensor] > objDist+5 || SensorValue[frontSensor] < objDist-5) {
 			motor[shooter] = 45;
 			wait1Msec(500);
 			motor[shooter] = 0;
@@ -73,7 +71,7 @@ task main()
 {
 	while(true)		/* While the Sonar Sensor readings are greater */
 	{
-		if(SensorValue[frontSensor] > 22)
+		if(SensorValue[frontSensor] > 25)
 		{
 			moveForwards();
 		}
@@ -88,14 +86,21 @@ task main()
 			if (attackMode(objDist) == 1) {
 				continue;
 			}
-			else if (SensorValue[leftSensor] > 22){
-				turnLeft();
-				continue;
-			}
-			else
-			{
-				turnRight();
-				continue;
+			else {
+				if (SensorValue[frontSensor] < 20) {
+					moveBackwards();
+					wait1Msec(500);
+					continue;
+				}
+				if (SensorValue[leftSensor] > 25){
+					turnLeft();
+					continue;
+				}
+				else
+				{
+					turnRight();
+					continue;
+				}
 			}
 		}
 	}
