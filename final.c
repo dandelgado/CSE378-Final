@@ -55,6 +55,8 @@ int attackMode(int objDist)
 	clearTimer(T1);
 	while(time1[T1]<3000) {
 		if(SensorValue[frontSensor] > objDist+5 || SensorValue[frontSensor] < objDist-5) {
+			playSound(soundBeepBeep);
+
 			motor[shooter] = 45;
 			wait1Msec(500);
 			motor[shooter] = 0;
