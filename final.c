@@ -1,5 +1,6 @@
 #pragma config(Sensor, S1,		 frontSensor,		 sensorSONAR)
 #pragma config(Sensor, S2,		 leftSensor,		 sensorSONAR)
+#pragma config(Sensor, S3,		 soundSensor,		 sensorSoundDB)
 #pragma config(Motor,	 motorA,					shooter,			 tmotorNXT, PIDControl, encoder)
 #pragma config(Motor,	 motorB,					leftMotor,		 tmotorNXT, PIDControl, encoder)
 #pragma config(Motor,	 motorC,					rightMotor,		 tmotorNXT, PIDControl, encoder)
@@ -13,10 +14,40 @@ ASSUMPTIONS AND EDGE CASES
 - Assume optimal starting position.
 */
 
-void moveForwards()
+//void moveForwards()
+//{
+	//motor[leftMotor] = 40;
+	//motor[rightMotor] = 40;
+//}
+
+void turnToNoise(short soundValue)
 {
-	motor[leftMotor] = 40;
-	motor[rightMotor] = 40;
+	//Initialization
+	short lastSoundValue = soundValue;
+	short lastTurn = 0;//0 means left
+	//0. store the lastTurn[left(0) or right(1)] in a variable, and lastSoundValue
+	//1. turn left for 10 degree and turn right for 10 degree ->
+	//check which turn makes the sound larger Then turn to that side, and update lastTurn and lastSoundValue
+	//2. Repeat 1 till the turn it makes different from last turn
+	motor[leftMotor] = 20;
+	motor[rightMotor] = -20;
+	wait1Msec(200);
+
+	if(SensorValue[soundSensor] >
+}
+
+void moveBasedOnSound(short soundValue)
+{
+	if(soundValue >= 10)
+	{
+		motor[leftMotor] = 5;
+		motor[rightMotor] = 5;
+	}
+	else
+	{
+		motor[leftMotor] = 0;
+		motor[rightMotor] = 0;
+	}
 }
 
 void moveBackwards()
@@ -54,8 +85,7 @@ int attackMode(int objDist)
 	int r = 0;
 	clearTimer(T1);
 	while(time1[T1]<3000) {
-		if(SensorValue[frontSensor] > objDist+5 || SensorValue[frontSensor] < objDist-5)
-		{
+		if(SensorValue[frontSensor] > objDist+5 || SensorValue[frontSensor] < objDist-5) {
 			playSound(soundBeepBeep);
 
 			motor[shooter] = 45;
@@ -76,7 +106,8 @@ task main()
 	{
 		if(SensorValue[frontSensor] > 25 && SensorValue[leftSensor] > 8)
 		{
-			moveForwards();
+			//moveForwards();
+			moveBasedOnSound(SensorValue[soundSensor]);
 		}
 		else
 		{
