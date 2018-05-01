@@ -54,7 +54,8 @@ int attackMode(int objDist)
 	int r = 0;
 	clearTimer(T1);
 	while(time1[T1]<3000) {
-		if(SensorValue[frontSensor] > objDist+5 || SensorValue[frontSensor] < objDist-5) {
+		if(SensorValue[frontSensor] > objDist+5 || SensorValue[frontSensor] < objDist-5)
+		{
 			playSound(soundBeepBeep);
 
 			motor[shooter] = 45;
@@ -73,7 +74,7 @@ task main()
 {
 	while(true)		/* While the Sonar Sensor readings are greater */
 	{
-		if(SensorValue[frontSensor] > 25)
+		if(SensorValue[frontSensor] > 25 && SensorValue[leftSensor] > 8)
 		{
 			moveForwards();
 		}
