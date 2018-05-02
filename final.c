@@ -20,6 +20,56 @@ void moveForwards()
 	motor[rightMotor] = 40;
 }
 
+void moveBackwards()
+{
+	motor[leftMotor] = -40;
+	motor[rightMotor] = -40;
+}
+
+void stopMove()
+{
+	motor[leftMotor] = 0;
+	motor[rightMotor] = 0;
+}
+
+void turnLeft()
+{
+	motor[leftMotor] = -20;
+	motor[rightMotor] = 20;
+	wait1Msec(1000);
+	motor[leftMotor] = 0;
+	motor[rightMotor] = 0;
+}
+
+void turnRight()
+{
+	motor[leftMotor] = 20;
+	motor[rightMotor] = -20;
+	wait1Msec(1000);
+	motor[leftMotor] = 0;
+	motor[rightMotor] = 0;
+}
+
+int attackMode(int objDist)
+{
+	int r = 0;
+	clearTimer(T1);
+	while(time1[T1]<1000) {
+		if(SensorValue[frontSensor] > objDist+5 || SensorValue[frontSensor] < objDist-5) {
+			playSound(soundBeepBeep);
+
+			motor[shooter] = 45;
+			wait1Msec(500);
+			motor[shooter] = 0;
+			r = 1;
+		}
+		else {
+			stopMove();
+		}
+	}
+	return r;
+}
+
 void turnToNoise()
 {
 	//Initialization
@@ -87,61 +137,11 @@ void turnToNoise()
 	}
 }
 
-void moveBackwards()
-{
-	motor[leftMotor] = -40;
-	motor[rightMotor] = -40;
-}
-
-void stopMove()
-{
-	motor[leftMotor] = 0;
-	motor[rightMotor] = 0;
-}
-
-void turnLeft()
-{
-	motor[leftMotor] = -20;
-	motor[rightMotor] = 20;
-	wait1Msec(1000);
-	motor[leftMotor] = 0;
-	motor[rightMotor] = 0;
-}
-
-void turnRight()
-{
-	motor[leftMotor] = 20;
-	motor[rightMotor] = -20;
-	wait1Msec(1000);
-	motor[leftMotor] = 0;
-	motor[rightMotor] = 0;
-}
-
-int attackMode(int objDist)
-{
-	int r = 0;
-	clearTimer(T1);
-	while(time1[T1]<3000) {
-		if(SensorValue[frontSensor] > objDist+5 || SensorValue[frontSensor] < objDist-5) {
-			playSound(soundBeepBeep);
-
-			motor[shooter] = 45;
-			wait1Msec(500);
-			motor[shooter] = 0;
-			r = 1;
-		}
-		else {
-			stopMove();
-		}
-	}
-	return r;
-}
-
 task main()
 {
 	while(true)
 	{
-		if(SensorValue[frontSensor] > 25 && SensorValue[leftSensor] > 8 && SensorValue[soundSensor] < 80)
+		if(SensorValue[frontSensor] > 24 && SensorValue[leftSensor] > 8 && SensorValue[soundSensor] < 60)
 		{
 			moveForwards();
 		}
@@ -151,8 +151,16 @@ task main()
 			If object moves, the robot will attack, and then proceed to move forward.
 			If not, the robot attempts to make a turn.*/
 			stopMove();
-			if (SensorValue[soundSensor] >= 80 && SensorValue[frontSensor] > 25 && SensorValue[leftSensor] > 8) {
+			if (SensorValue[soundSensor] >= 60 && SensorValue[frontSensor] > 22 && SensorValue[leftSensor] > 8) {
 				turnToNoise();
+				continue;
+			}
+			else if (SensorValue[frontSensor] > 24 && SensorValue[leftSensor] <= 8) {
+				motor[leftMotor] = 20;
+				motor[rightMotor] = -20;
+				wait1Msec(200);
+				motor[leftMotor] = 0;
+				motor[rightMotor] = 0;
 				continue;
 			}
 			else {
