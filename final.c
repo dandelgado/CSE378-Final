@@ -14,39 +14,76 @@ ASSUMPTIONS AND EDGE CASES
 - Assume optimal starting position.
 */
 
-//void moveForwards()
-//{
-	//motor[leftMotor] = 40;
-	//motor[rightMotor] = 40;
-//}
+void moveForwards()
+{
+	motor[leftMotor] = 40;
+	motor[rightMotor] = 40;
+}
 
-void turnToNoise(short soundValue)
+void turnToNoise()
 {
 	//Initialization
-	short lastSoundValue = soundValue;
-	short lastTurn = 0;//0 means left
+	wait1Msec(500);
+	short straightSound = SensorValue[soundSensor];
+	//short lastTurn = 0;//0 means left
 	//0. store the lastTurn[left(0) or right(1)] in a variable, and lastSoundValue
 	//1. turn left for 10 degree and turn right for 10 degree ->
 	//check which turn makes the sound larger Then turn to that side, and update lastTurn and lastSoundValue
 	//2. Repeat 1 till the turn it makes different from last turn
+	motor[leftMotor] = -20;
+	motor[rightMotor] = 20;
+	wait1Msec(200);
+	stopMove();
+	wait1Msec(500);
+	short leftSound = SensorValue[soundSensor];
 	motor[leftMotor] = 20;
 	motor[rightMotor] = -20;
+	wait1Msec(400);
+	stopMove();
+	wait1Msec(500);
+	short rightSound = SensorValue[soundSensor];
+	motor[leftMotor] = -20;
+	motor[rightMotor] = 20;
 	wait1Msec(200);
-
-	if(SensorValue[soundSensor] >
-}
-
-void moveBasedOnSound(short soundValue)
-{
-	if(soundValue >= 10)
-	{
-		motor[leftMotor] = 5;
-		motor[rightMotor] = 5;
+	if(straightSound > leftSound) {
+		if (straightSound < rightSound) {
+			short prevSound = SensorValue[soundSensor];
+			while (SensorValue[soundSensor] >= prevSound) {
+				prevSound = SensorValue[soundSensor];
+				motor[leftMotor] = 20;
+				motor[rightMotor] = -20;
+				wait1Msec(200);
+			}
+			motor[leftMotor] = -20;
+			motor[rightMotor] = 20;
+			wait1Msec(200);
+		}
 	}
-	else
-	{
-		motor[leftMotor] = 0;
-		motor[rightMotor] = 0;
+	else {
+		if (leftSound > rightSound) {
+			short prevSound = SensorValue[soundSensor];
+			while (SensorValue[soundSensor] >= prevSound) {
+				prevSound = SensorValue[soundSensor];
+				motor[leftMotor] = -20;
+				motor[rightMotor] = 20;
+				wait1Msec(200);
+			}
+			motor[leftMotor] = 20;
+			motor[rightMotor] = -20;
+			wait1Msec(200);
+		}
+		else {
+			short prevSound = SensorValue[soundSensor];
+			while (SensorValue[soundSensor] >= prevSound) {
+				prevSound = SensorValue[soundSensor];
+				motor[leftMotor] = 20;
+				motor[rightMotor] = -20;
+				wait1Msec(200);
+			}
+			motor[leftMotor] = -20;
+			motor[rightMotor] = 20;
+			wait1Msec(200);
+		}
 	}
 }
 
@@ -102,12 +139,11 @@ int attackMode(int objDist)
 
 task main()
 {
-	while(true)		/* While the Sonar Sensor readings are greater */
+	while(true)
 	{
-		if(SensorValue[frontSensor] > 25 && SensorValue[leftSensor] > 8)
+		if(SensorValue[frontSensor] > 25 && SensorValue[leftSensor] > 8 && SensorValue[soundSensor] < 80)
 		{
-			//moveForwards();
-			moveBasedOnSound(SensorValue[soundSensor]);
+			moveForwards();
 		}
 		else
 		{
@@ -115,25 +151,31 @@ task main()
 			If object moves, the robot will attack, and then proceed to move forward.
 			If not, the robot attempts to make a turn.*/
 			stopMove();
-			wait1Msec(500);
-			int objDist = SensorValue[frontSensor];
-			if (attackMode(objDist) == 1) {
+			if (SensorValue[soundSensor] >= 80 && SensorValue[frontSensor] > 25 && SensorValue[leftSensor] > 8) {
+				turnToNoise();
 				continue;
 			}
 			else {
-				if (SensorValue[frontSensor] < 20) {
-					moveBackwards();
-					wait1Msec(500);
+				wait1Msec(300);
+				int objDist = SensorValue[frontSensor];
+				if (attackMode(objDist) == 1) {
 					continue;
 				}
-				if (SensorValue[leftSensor] > 25){
-					turnLeft();
-					continue;
-				}
-				else
-				{
-					turnRight();
-					continue;
+				else {
+					if (SensorValue[frontSensor] < 20) {
+						moveBackwards();
+						wait1Msec(500);
+						continue;
+					}
+					if (SensorValue[leftSensor] > 25){
+						turnLeft();
+						continue;
+					}
+					else
+					{
+						turnRight();
+						continue;
+					}
 				}
 			}
 		}
