@@ -36,25 +36,35 @@ void turnLeft()
 {
 	motor[leftMotor] = -20;
 	motor[rightMotor] = 20;
-	wait1Msec(875);
-	motor[leftMotor] = 0;
-	motor[rightMotor] = 0;
+	wait1Msec(880);
+	stopMove();
+	wait1Msec(500);
 }
 
 void turnRight()
 {
 	motor[leftMotor] = 20;
 	motor[rightMotor] = -20;
-	wait1Msec(875);
-	motor[leftMotor] = 0;
-	motor[rightMotor] = 0;
+	wait1Msec(880);
+	stopMove();
+	wait1Msec(500);
+}
+
+void nudgeRight()
+{
+	motor[leftMotor] = 50;
+	motor[rightMotor] = 20;
+	wait1Msec(100);
+	motor[leftMotor] = 20;
+	motor[rightMotor] = 30;
+	wait1Msec(100);
 }
 
 int attackMode(int objDist)
 {
 	int r = 0;
 	clearTimer(T1);
-	while(time1[T1]<1000) {
+	while(time1[T1]<1500) {
 		if(SensorValue[frontSensor] > objDist+5 || SensorValue[frontSensor] < objDist-5) {
 			playSound(soundBeepBeep);
 
@@ -77,6 +87,10 @@ task main()
 		if(SensorValue[frontSensor] > 24)
 		{
 			moveForwards();
+			if (SensorValue[leftSensor] < 15) {
+				nudgeRight();
+				continue;
+			}
 		}
 		else
 		{
@@ -102,10 +116,8 @@ task main()
 						continue;
 					}
 					turnRight();
-					stopMove();
 					short rightVal = SensorValue[frontSensor];
 					turnLeft();
-					stopMove();
 					if (SensorValue[leftSensor] > rightVal){
 						turnLeft();
 						continue;
