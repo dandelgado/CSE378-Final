@@ -36,7 +36,7 @@ void turnLeft()
 {
 	motor[leftMotor] = -20;
 	motor[rightMotor] = 20;
-	wait1Msec(1000);
+	wait1Msec(875);
 	motor[leftMotor] = 0;
 	motor[rightMotor] = 0;
 }
@@ -45,7 +45,7 @@ void turnRight()
 {
 	motor[leftMotor] = 20;
 	motor[rightMotor] = -20;
-	wait1Msec(1000);
+	wait1Msec(875);
 	motor[leftMotor] = 0;
 	motor[rightMotor] = 0;
 }
@@ -141,7 +141,7 @@ task main()
 {
 	while(true)
 	{
-		if(SensorValue[frontSensor] > 24 && SensorValue[leftSensor] > 8 && SensorValue[soundSensor] < 60)
+		if(SensorValue[frontSensor] > 24 && SensorValue[soundSensor] < 60)
 		{
 			moveForwards();
 		}
@@ -151,19 +151,19 @@ task main()
 			If object moves, the robot will attack, and then proceed to move forward.
 			If not, the robot attempts to make a turn.*/
 			stopMove();
-			if (SensorValue[soundSensor] >= 60 && SensorValue[frontSensor] > 22 && SensorValue[leftSensor] > 8) {
+			if (SensorValue[soundSensor] >= 60 && SensorValue[frontSensor] > 24) {
 				turnToNoise();
 				continue;
 			}
-			else if (SensorValue[frontSensor] > 24 && SensorValue[leftSensor] <= 8) {
-				motor[leftMotor] = 20;
-				motor[rightMotor] = -20;
-				wait1Msec(200);
-				motor[leftMotor] = 0;
-				motor[rightMotor] = 0;
-				continue;
-			}
-			else {
+			//else if (SensorValue[frontSensor] > 24 && SensorValue[leftSensor] <= 8) {
+			//	motor[leftMotor] = 20;
+			//	motor[rightMotor] = -20;
+			//	wait1Msec(200);
+			//	motor[leftMotor] = 0;
+			//	motor[rightMotor] = 0;
+			//	continue;
+			//}
+			//else {
 				wait1Msec(300);
 				int objDist = SensorValue[frontSensor];
 				if (attackMode(objDist) == 1) {
@@ -175,7 +175,12 @@ task main()
 						wait1Msec(500);
 						continue;
 					}
-					if (SensorValue[leftSensor] > 25){
+					turnRight();
+					stopMove();
+					short rightVal = SensorValue[frontSensor];
+					turnLeft();
+					stopMove();
+					if (SensorValue[leftSensor] > rightVal){
 						turnLeft();
 						continue;
 					}
@@ -185,7 +190,7 @@ task main()
 						continue;
 					}
 				}
-			}
+			//}
 		}
 	}
 }

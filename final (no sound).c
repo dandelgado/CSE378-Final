@@ -36,7 +36,7 @@ void turnLeft()
 {
 	motor[leftMotor] = -20;
 	motor[rightMotor] = 20;
-	wait1Msec(1000);
+	wait1Msec(875);
 	motor[leftMotor] = 0;
 	motor[rightMotor] = 0;
 }
@@ -45,7 +45,7 @@ void turnRight()
 {
 	motor[leftMotor] = 20;
 	motor[rightMotor] = -20;
-	wait1Msec(1000);
+	wait1Msec(875);
 	motor[leftMotor] = 0;
 	motor[rightMotor] = 0;
 }
@@ -74,22 +74,22 @@ task main()
 {
 	while(true)
 	{
-		if(SensorValue[frontSensor] > 24 && SensorValue[leftSensor])
+		if(SensorValue[frontSensor] > 24)
 		{
 			moveForwards();
 		}
 		else
 		{
 			stopMove();
-			if (SensorValue[frontSensor] > 24 && SensorValue[leftSensor] <= 8) {
-				motor[leftMotor] = 20;
-				motor[rightMotor] = -20;
-				wait1Msec(200);
-				motor[leftMotor] = 0;
-				motor[rightMotor] = 0;
-				continue;
-			}
-			else {
+			//if (SensorValue[frontSensor] > 24 && SensorValue[leftSensor] <= 8) {
+			//	motor[leftMotor] = 20;
+			//	motor[rightMotor] = -20;
+			//	wait1Msec(200);
+			//	motor[leftMotor] = 0;
+			//	motor[rightMotor] = 0;
+			//	continue;
+			//}
+			//else {
 				wait1Msec(300);
 				int objDist = SensorValue[frontSensor];
 				if (attackMode(objDist) == 1) {
@@ -101,7 +101,12 @@ task main()
 						wait1Msec(500);
 						continue;
 					}
-					if (SensorValue[leftSensor] > 25){
+					turnRight();
+					stopMove();
+					short rightVal = SensorValue[frontSensor];
+					turnLeft();
+					stopMove();
+					if (SensorValue[leftSensor] > rightVal){
 						turnLeft();
 						continue;
 					}
@@ -111,7 +116,7 @@ task main()
 						continue;
 					}
 				}
-			}
+			//}
 		}
 	}
 }
